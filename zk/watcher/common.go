@@ -100,7 +100,7 @@ func RegistServer(conn *zk.Conn, host string) (err error) {
 		return
 	}
 	path = path + "/" + host
-	_, err = conn.Create(path, []byte(""), int32(0), zk.WorldACL(zk.PermAll))
+	_, err = conn.Create(path, []byte(""), int32(1), zk.WorldACL(zk.PermAll))
 	return
 }
 
