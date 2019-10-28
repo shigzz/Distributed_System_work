@@ -7,7 +7,7 @@ import (
 )
 
 func request(str string) {
-	conn, err := net.Dial("tcp", "localhost:8888")
+	conn, err := net.Dial("tcp", "192.168.3.72:9999")
 	if err != nil {
 		fmt.Println("error in dialing, ", err.Error())
 	}
@@ -27,8 +27,8 @@ func request(str string) {
 
 func main() {
 
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 500; i++ {
 		request("hello" + strconv.Itoa(i))
-		//<-time.After(time.Second * 1)
 	}
+	//<-time.After(time.Second * 10)
 }
