@@ -79,13 +79,13 @@ func main() {
 	}
 }
 
-func start() {
+/*func start() {
 	for i := 0; i < 10; i++ {
 		fmt.Println("start Client :", i)
 		startClient()
 		time.Sleep(1 * time.Second)
 	}
-}
+}*/
 
 func startClient() {
 	defer func() {
@@ -95,6 +95,9 @@ func startClient() {
 	}()
 	// service := "127.0.0.1:8899"
 	//获取地址
+	for len(serverList) == 0 {
+		//serverList = <-snapshots
+	}
 	serverHost, err := getServerHost()
 	if err != nil {
 		fmt.Printf("get server host fail: %s \n", err)
@@ -122,6 +125,7 @@ func startClient() {
 func getServerHost() (host string, err error) {
 	//随机选中一个返回
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	host = serverList[r.Intn(3)]
+	length := len(serverList)
+	host = serverList[r.Intn(length)]
 	return
 }
