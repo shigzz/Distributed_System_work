@@ -15,8 +15,8 @@ type ClientSelector struct {
 	errors     chan error
 }
 
-//NewClientSeletor 新建selector对象
-func NewClientSeletor(zkaddr []string, selectmode int) *ClientSelector {
+//NewClientSelector 新建selector对象
+func NewClientSelector(zkaddr []string, selectmode int) *ClientSelector {
 	conn, err := GetConnect(zkaddr)
 	if err != nil {
 		fmt.Println("failed to connect zookeeper server: ", err)
