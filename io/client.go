@@ -19,13 +19,13 @@ func request(str string) {
 		return
 	}
 	reschan := getResponse(conn)
-	go func() {
+	/*go func() {
 		for res := range reschan {
 			fmt.Println(res)
 			break
 		}
-	}()
-	fmt.Println(str)
+	}()*/
+	//fmt.Println(str)
 	//time.Sleep(1 * time.Second)
 	/*for res := range reschan {
 		fmt.Println(res)
