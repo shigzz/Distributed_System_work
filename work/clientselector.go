@@ -11,8 +11,6 @@ type ClientSelector struct {
 	zkaddr     []string
 	servers    []string
 	selectmode int
-	snapshots  chan []string
-	errors     chan error
 }
 
 //NewClientSelector 新建selector对象
@@ -29,13 +27,22 @@ func NewClientSelector(zkaddr []string, selectmode int) *ClientSelector {
 		panic(err)
 	}
 	//监听服务器列表的变化，以及错误
-	snapshots, errors := watchServerList(conn, "/go_servers")
-	return &ClientSelector{zkaddr, serverList, selectmode, snapshots, errors}
+	//snapshots, errors := watchServerList(conn, "/go_servers")
+	return &ClientSelector{zkaddr, serverList, selectmode}
 }
 
-func (c *ClientSelector) getServer() (server string, err error) {
+func (c *ClientSelector) getServerByRandom() (server string, err error) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	length := len(c.servers)
 	server = c.servers[r.Intn(length)]
+	return
+}
+
+var rr int
+
+func (c *ClientSelector) getServerByRR() (server string, err error) {
+	rr = (rr + 1) % len(c.servers)
+	server = c.servers[rr]
+	fmt.Println(rr, server)
 	return
 }

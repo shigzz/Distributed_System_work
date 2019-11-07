@@ -16,7 +16,8 @@ type Client struct {
 
 // NewClient creates a new client
 func NewClient(c ClientSelector) *Client {
-	thisServer, err := c.getServer()
+	//thisServer, err := c.getServerByRandom()
+	thisServer, err := c.getServerByRR()
 	if err != nil {
 		fmt.Println("get server err: ", err)
 	}
@@ -83,4 +84,9 @@ func (c *Client) Call(name string, fptr interface{}) {
 	}
 
 	container.Set(reflect.MakeFunc(container.Type(), f))
+}
+
+//SyncCall 异步通信
+func (c *Client) SyncCall(name string, fptr interface{}) {
+
 }

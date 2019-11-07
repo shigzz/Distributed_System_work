@@ -100,8 +100,8 @@ func GetServerList(conn *zk.Conn) (list []string, err error) {
 	return
 }
 
-//watch机制，服务器有断开或者重连，收到消息
-func watchServerList(conn *zk.Conn, path string) (chan []string, chan error) {
+//WatchServerList watch机制，服务器有断开或者重连，收到消息
+func WatchServerList(conn *zk.Conn, path string) (chan []string, chan error) {
 	snapshots := make(chan []string)
 	errors := make(chan error)
 
