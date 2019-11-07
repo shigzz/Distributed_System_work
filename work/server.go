@@ -12,12 +12,13 @@ type Server struct {
 	addr     string
 	zkServer []string
 	conn     net.Conn
+	weight   int
 	funcs    map[string]reflect.Value
 }
 
 //NewServer 创建新的Server
-func NewServer(addr string, zkserver []string) *Server {
-	return &Server{addr, zkserver, nil, make(map[string]reflect.Value)}
+func NewServer(addr string, zkserver []string, weight int) *Server {
+	return &Server{addr, zkserver, nil, weight, make(map[string]reflect.Value)}
 }
 
 //Register 在服务器中注册一个rpc服务
@@ -44,7 +45,7 @@ func (s *Server) Run() {
 		fmt.Printf(" connect zk error: %s ", err)
 		panic(err)
 	}
-	err = RegistServer(conn, s.addr)
+	err = RegistServer(conn, s.addr, s.weight)
 	if err != nil {
 		fmt.Printf(" regist node error: %s ", err)
 	}

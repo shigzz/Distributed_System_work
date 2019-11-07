@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"reflect"
+	"time"
 )
 
 // Client struct
@@ -16,14 +17,29 @@ type Client struct {
 
 // NewClient creates a new client
 func NewClient(c ClientSelector) *Client {
-	//thisServer, err := c.getServerByRandom()
-	thisServer, err := c.getServerByRR()
+	for len(c.servers) == 0 {
+		fmt.Println("no servers,waiting")
+		time.Sleep(1 * time.Second)
+	}
+	var thisServer string
+	var err error
+	switch c.selectmode {
+	case 1:
+		thisServer, err = c.getServerByRandom()
+	case 2:
+		thisServer, err = c.getServerByRR()
+	case 3:
+		thisServer, err = c.getServerByWR()
+	default:
+		err = errors.New("wrong select mode")
+	}
 	if err != nil {
 		fmt.Println("get server err: ", err)
 	}
 	conn, err := net.Dial("tcp", thisServer)
 	if err != nil {
 		fmt.Printf("dial error: %v\n", err)
+		conn = nil
 	}
 	return &Client{c, thisServer, conn}
 }
@@ -84,6 +100,11 @@ func (c *Client) Call(name string, fptr interface{}) {
 	}
 
 	container.Set(reflect.MakeFunc(container.Type(), f))
+}
+
+//GetConn 返回连接
+func (c *Client) GetConn() net.Conn {
+	return c.conn
 }
 
 //SyncCall 异步通信

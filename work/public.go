@@ -3,6 +3,7 @@ package work
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -71,14 +72,15 @@ func DeletePath(conn *zk.Conn, path string) (err error) {
 }
 
 //RegistServer 注册server
-func RegistServer(conn *zk.Conn, host string) (err error) {
+func RegistServer(conn *zk.Conn, host string, w int) (err error) {
 	path := "/" + "go_servers"
 	err = MakeDir(conn, path)
 	if err != nil {
 		return
 	}
 	path = path + "/" + host
-	_, err = conn.Create(path, []byte(""), int32(1), zk.WorldACL(zk.PermAll))
+	wei := strconv.Itoa(w)
+	_, err = conn.Create(path, []byte(wei), int32(1), zk.WorldACL(zk.PermAll))
 	return
 }
 
@@ -98,6 +100,20 @@ func GetServerList(conn *zk.Conn) (list []string, err error) {
 	list, _, err = conn.Children("/go_servers")
 	fmt.Println("list:", list)
 	return
+}
+
+//GetValue 获取值
+func GetValue(conn *zk.Conn, p string) (int, error) {
+	path := "/" + "go_servers/" + p
+	v, _, err := conn.Get(path)
+	if err != nil {
+		return 0, err
+	}
+	w, err := strconv.Atoi((string(v)))
+	if err != nil {
+		return 0, err
+	}
+	return w, nil
 }
 
 //WatchServerList watch机制，服务器有断开或者重连，收到消息

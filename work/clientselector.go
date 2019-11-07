@@ -10,6 +10,7 @@ import (
 type ClientSelector struct {
 	zkaddr     []string
 	servers    []string
+	wservers   map[string]int
 	selectmode int
 }
 
@@ -26,9 +27,16 @@ func NewClientSelector(zkaddr []string, selectmode int) *ClientSelector {
 		fmt.Printf(" get server list error: %s \n", err)
 		panic(err)
 	}
-	//监听服务器列表的变化，以及错误
-	//snapshots, errors := watchServerList(conn, "/go_servers")
-	return &ClientSelector{zkaddr, serverList, selectmode}
+	wdic := make(map[string]int, len(serverList))
+	for _, l := range serverList {
+		wdic[l], err = GetValue(conn, l)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+	}
+	fmt.Println(wdic)
+	return &ClientSelector{zkaddr, serverList, wdic, selectmode}
 }
 
 func (c *ClientSelector) getServerByRandom() (server string, err error) {
@@ -44,5 +52,20 @@ func (c *ClientSelector) getServerByRR() (server string, err error) {
 	rr = (rr + 1) % len(c.servers)
 	server = c.servers[rr]
 	fmt.Println(rr, server)
+	return
+}
+
+var (
+	wr = 0
+	wi = 0
+)
+
+func (c *ClientSelector) getServerByWR() (server string, err error) {
+	server = c.servers[wr]
+	wi = wi + 1
+	if wi >= c.wservers[server] {
+		wr = (wr + 1) % len(c.servers)
+		wi = 0
+	}
 	return
 }
